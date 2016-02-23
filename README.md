@@ -439,7 +439,7 @@ size_t length = sock.read_some(buffer(data), error);
 if (error == error::eof)
     return; // 连接关闭
 ```
-Boost.Asio的所有错误码都包含在ˆ的命名空间中（以便你创造一个大型的switch来检查错误的原因）。如果想要了解更多的细节，请参照*boost/asio/error.hpp*头文件
+Boost.Asio的所有错误码都包含在命名空间boost::asio::error中（以便你创造一个大型的switch来检查错误的原因）。如果想要了解更多的细节，请参照*boost/asio/error.hpp*头文件
 ### Boost.Asio中的线程
 当说到Boost.Asio的线程时，我们经常在讨论：
 
@@ -527,7 +527,8 @@ t.wait();
 ```
 io_service service; // 所有socket操作都由service来处理 
 ip::tcp::socket sock1(service); // all the socket operations are handled by service 
-ip::tcp::socket sock2(service); sock1.asyncconnect( ep, connect_handler); 
+ip::tcp::socket sock2(service); 
+sock1.async_connect( ep, connect_handler); 
 sock2.async_connect( ep, connect_handler); 
 deadline_timer t(service, boost::posixtime::seconds(5));
 t.async_wait(timeout_handler); 
@@ -539,7 +540,7 @@ service.run();
 io_service service;
 ip::tcp::socket sock1(service);
 ip::tcp::socket sock2(service);
-sock1.asyncconnect( ep, connect_handler);
+sock1.async_connect( ep, connect_handler);
 sock2.async_connect( ep, connect_handler);
 deadline_timer t(service, boost::posixtime::seconds(5));
 t.async_wait(timeout_handler);
@@ -556,7 +557,7 @@ void run_service()
 io_service service[2];
 ip::tcp::socket sock1(service[0]);
 ip::tcp::socket sock2(service[1]);
-sock1.asyncconnect( ep, connect_handler);
+sock1.async_connect( ep, connect_handler);
 sock2.async_connect( ep, connect_handler);
 deadline_timer t(service[0], boost::posixtime::seconds(5));
 t.async_wait(timeout_handler);
