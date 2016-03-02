@@ -771,9 +771,9 @@ sock.close();
 * *async_send(buffer [, flags], handler)*：这个函数启动了一个异步发送缓冲区数据的操作。
 * *async_write_some(buffer, handler)*：这个函数和a*sync_send(buffer, handler)*功能一致。
 * *async_send_to(buffer, endpoint, handler)*：这个函数启动了一个异步send缓冲区数据到指定端点的操作。
-* *receive(buffer [, flags])*：这个函数异步地从所给的缓冲区读取数据。在读完所有数据或者错误出现之前，这个函数都是阻塞的。
+* *receive(buffer [, flags])*：这个函数同步地从所给的缓冲区读取数据。在读完所有数据或者错误出现之前，这个函数都是阻塞的。
 * *read_some(buffer)*：这个函数的功能和*receive(buffer)*是一致的。
-* * receive_from(buffer, endpoint [, flags])*：这个函数异步地从一个指定的端点获取数据并写入到给定的缓冲区。在读完所有数据或者错误出现之前，这个函数都是阻塞的。
+* *receive_from(buffer, endpoint [, flags])*：这个函数同步地从一个指定的端点获取数据并写入到给定的缓冲区。在读完所有数据或者错误出现之前，这个函数都是阻塞的。
 * *send(buffer [, flags])*：这个函数同步地发送缓冲区的数据。在所有数据发送成功或者出现错误之前，这个函数都是阻塞的。
 * *write_some(buffer)*：这个函数和*send(buffer)*的功能一致。
 * *send_to(buffer, endpoint [, flags])*：这个函数同步地把缓冲区数据发送到一个指定的端点。在所有数据发送成功或者出现错误之前，这个函数都是阻塞的。
@@ -1042,7 +1042,7 @@ Boost.Asio提供了处理I/O的自由函数，我们分四组来分析它们。
 ####connect方法
 这些方法把套接字连接到一个端点。
 
-* *connect(socket, begin [, end] [, condition])*：这个方法遍历队列中从start到end的端点来尝试同步连接。begin迭代器是调用*socket_type::resolver::query*的返回结果（你可能需要回顾一下端点这个章节）。特别提示end迭代器是可选的；你可以忽略它。你还可以提供一个condition的方法给每次连接尝试之后调用。用法是*Iterator connect_condition(const boost::system::error_code & err,Iterator next);*。你可以选择返回一个不是*next*的迭代器，这样你就可以跳过一些端点。
+* *connect(socket, begin [, end] [, condition])*：这个方法遍历队列中从begin到end的端点来尝试同步连接。begin迭代器是调用*socket_type::resolver::query*的返回结果（你可能需要回顾一下端点这个章节）。特别提示end迭代器是可选的；你可以忽略它。你还可以提供一个condition的方法给每次连接尝试之后调用。用法是*Iterator connect_condition(const boost::system::error_code & err,Iterator next);*。你可以选择返回一个不是*next*的迭代器，这样你就可以跳过一些端点。
 * *async_connect(socket, begin [, end] [, condition], handler)*：这个方法异步地调用连接方法，在结束时，它会调用完成处理方法。用法是*void handler(constboost::system::error_code & err, Iterator iterator);*。传递给处理方法的第二个参数是连接成功端点的迭代器（或者end迭代器）。
 
 它的例子如下：
@@ -1133,7 +1133,7 @@ int main(int argc, char* argv[]) {
 
 这些方法在条件满足之前会一直读取： 
 * *async_read_until(stream, stream_buffer, delim, handler)*:这个方法启动一个异步*read*操作。*read*操作会在读取到某个分隔符时结束。分隔符可以是字符,*std::string*或者*boost::regex*。处理方法的格式为：*void handler(const boost::system::error_code & err, size_t bytes);*。
-* *async_read_until(strem, stream_buffer, completion, handler)*：这个方法和之前的方法是一样的，但是没有分隔符，而是一个完成处理方法。完成处理方法的格式为：*pair< iterator,bool > completion(iterator begin, iterator end);*，其中迭代器的类型为*buffers_iterator< streambuf::const_buffers_type >*。你需要记住的是这个迭代器是支持随机访问的。你扫描整个区间（begin，end），然后决定read操作是否应该结束。返回的结果是一个结果对，第一个成员是一个迭代器，它指向最后被这个方法访问的字符；第二个成员指定read操作是否需要结束，需要时返回true，否则返回false。
+* *async_read_until(stream, stream_buffer, completion, handler)*：这个方法和之前的方法是一样的，但是没有分隔符，而是一个完成处理方法。完成处理方法的格式为：*pair< iterator,bool > completion(iterator begin, iterator end);*，其中迭代器的类型为*buffers_iterator< streambuf::const_buffers_type >*。你需要记住的是这个迭代器是支持随机访问的。你扫描整个区间（begin，end），然后决定read操作是否应该结束。返回的结果是一个结果对，第一个成员是一个迭代器，它指向最后被这个方法访问的字符；第二个成员指定read操作是否需要结束，需要时返回true，否则返回false。
 * *read_until(stream, stream_buffer, delim)*：这个方法执行一个同步的*read*操作，参数的意义和*async_read_until*一样。
 * *read_until(stream, stream_buffer, completion)*：这个方法执行一个同步的read操作，参数的意义和*async_read_until*一样。
 
